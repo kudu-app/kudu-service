@@ -1,0 +1,4 @@
+; kudu item service settings
+
+[firebase]
+itemcreds="$FIREBASE_ITEM_CREDS||./creds/itemcreds.json||file"
