@@ -39,7 +39,7 @@ func New() (*Server, error) {
 	}
 
 	itemRef, err := firebase.NewDatabaseRef(
-		firebase.GoogleServiceAccountCredentialsJSON([]byte(config.GetKey("firebase.item.cred"))),
+		firebase.GoogleServiceAccountCredentialsJSON([]byte(config.GetKey("firebase.itemcreds"))),
 	)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (s *Server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListRes
 	var res pb.ListResponse
 
 	items := make(map[string]Item)
-	err = s.itemRef.Ref("/item").Get(items)
+	err = s.itemRef.Ref("/item").Get(&items)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,10 +83,11 @@ func (s *Server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddRespon
 		Tag:   req.Item.Tag,
 		Notes: req.Item.Notes,
 	}
-	_, err = s.itemRef.Ref("/item").Push(item)
+	id, err := s.itemRef.Ref("/item").Push(item)
 	if err != nil {
 		log.Fatal(err)
 	}
+	res.Id = id
 	return &res, nil
 }
 
@@ -96,7 +97,7 @@ func (s *Server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 	var res pb.GetResponse
 
 	var item Item
-	err = s.itemRef.Ref("/item" + req.Id).Get(&item)
+	err = s.itemRef.Ref("/item/" + req.Id).Get(&item)
 	if err != nil {
 		log.Fatal(err)
 	}
