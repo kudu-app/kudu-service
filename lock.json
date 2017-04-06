@@ -1,0 +1,162 @@
+{
+    "memo": "1c11620a102d62d2c4c10310719bdd334c3dad4038778cd77350adb7b560ee9e",
+    "projects": [
+        {
+            "name": "cloud.google.com/go",
+            "version": "v0.7.0",
+            "revision": "2e6a95edb1071d750f6d7db777bf66cd2997af6c",
+            "packages": [
+                "compute/metadata",
+                "internal"
+            ]
+        },
+        {
+            "name": "github.com/golang/protobuf",
+            "branch": "master",
+            "revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
+            "packages": [
+                "proto",
+                "ptypes/timestamp"
+            ]
+        },
+        {
+            "name": "github.com/googleapis/gax-go",
+            "branch": "master",
+            "revision": "9af46dd5a1713e8b5cd71106287eba3cefdde50b",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/knq/envcfg",
+            "branch": "master",
+            "revision": "ac4e8e89b6508f0d74617f61de7e68a351cc3896",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/knq/firebase",
+            "branch": "master",
+            "revision": "ac317d340ae62f2f32ced3fd6f98f6a0bf9660ac",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/knq/ini",
+            "branch": "master",
+            "revision": "668e7f44efb09df98684858a6a72bdf96f7a1685",
+            "packages": [
+                ".",
+                "parser"
+            ]
+        },
+        {
+            "name": "github.com/knq/jwt",
+            "branch": "master",
+            "revision": "b8acfb9b22cac2bd72f7d7555c46664a5df3d2a6",
+            "packages": [
+                ".",
+                "bearer",
+                "gserviceaccount"
+            ]
+        },
+        {
+            "name": "github.com/knq/pemutil",
+            "branch": "master",
+            "revision": "a128105dd4897e4b763d54cb548222f70c4a6622",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/rnd/kudu-proto",
+            "branch": "master",
+            "revision": "d62c79537267dca505f133593820e8381fd6378c",
+            "packages": [
+                "item",
+                "types"
+            ]
+        },
+        {
+            "name": "golang.org/x/net",
+            "branch": "master",
+            "revision": "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d",
+            "packages": [
+                "context",
+                "context/ctxhttp",
+                "http2",
+                "http2/hpack",
+                "idna",
+                "internal/timeseries",
+                "lex/httplex",
+                "trace"
+            ]
+        },
+        {
+            "name": "golang.org/x/oauth2",
+            "branch": "master",
+            "revision": "7fdf09982454086d5570c7db3e11f360194830ca",
+            "packages": [
+                ".",
+                "google",
+                "internal",
+                "jws",
+                "jwt"
+            ]
+        },
+        {
+            "name": "golang.org/x/text",
+            "branch": "master",
+            "revision": "f4b4367115ec2de254587813edaa901bc1c723a8",
+            "packages": [
+                "internal/gen",
+                "internal/triegen",
+                "internal/ucd",
+                "secure/bidirule",
+                "transform",
+                "unicode/bidi",
+                "unicode/cldr",
+                "unicode/norm",
+                "unicode/rangetable"
+            ]
+        },
+        {
+            "name": "google.golang.org/appengine",
+            "version": "v1.0.0",
+            "revision": "150dc57a1b433e64154302bdc40b6bb8aefa313a",
+            "packages": [
+                ".",
+                "internal",
+                "internal/app_identity",
+                "internal/base",
+                "internal/datastore",
+                "internal/log",
+                "internal/modules",
+                "internal/remote_api",
+                "internal/urlfetch",
+                "urlfetch"
+            ]
+        },
+        {
+            "name": "google.golang.org/grpc",
+            "version": "v1.2.0",
+            "revision": "cdee119ee21e61eef7093a41ba148fa83585e143",
+            "packages": [
+                ".",
+                "codes",
+                "credentials",
+                "grpclog",
+                "internal",
+                "keepalive",
+                "metadata",
+                "naming",
+                "peer",
+                "stats",
+                "tap",
+                "transport"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "dependencies": {
+        "github.com/knq/envcfg": {
+            "branch": "master"
+        },
+        "github.com/knq/firebase": {
+            "branch": "master"
+        },
+        "github.com/rnd/kudu-proto": {
+            "branch": "master"
+        }
+    }
+}
