@@ -1,1 +1,1 @@
-# kudu-service
+# Kudu-Service [![Build Status](https://travis-ci.org/rnd/kudu-service.svg?branch=master)](https://travis-ci.org/rnd/kudu-service) [![Coverage Status](https://coveralls.io/repos/github/rnd/kudu-service/badge.svg?branch=master)](https://coveralls.io/github/rnd/kudu-service?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/rnd/kudu-service)](https://goreportcard.com/report/github.com/rnd/kudu-service)
