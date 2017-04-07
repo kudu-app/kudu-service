@@ -1,14 +1,24 @@
-package item
+package main
 
 import (
-	"context"
+	"flag"
+	"fmt"
 	"log"
+	"net"
+
+	"golang.org/x/net/context"
+
+	"google.golang.org/grpc"
 
 	"github.com/knq/envcfg"
 	"github.com/knq/firebase"
 
 	pb "github.com/rnd/kudu-proto/item"
 	pt "github.com/rnd/kudu-proto/types"
+)
+
+var (
+	port = flag.Int("port", 50051, "Item server port")
 )
 
 // Item represents firebase database model for item database ref.
@@ -20,8 +30,8 @@ type Item struct {
 	Created firebase.ServerTimestamp `json:"created"`
 }
 
-// Server is gRPC server.
-type Server struct {
+// server is gRPC server.
+type server struct {
 	// config is server environment config.
 	config *envcfg.Envcfg
 
@@ -29,30 +39,28 @@ type Server struct {
 	itemRef *firebase.DatabaseRef
 }
 
-// New creates new instance of item server.
-func New() (*Server, error) {
+// newServer creates new instance of item server.
+func newServer() *server {
 	var err error
 
 	config, err := envcfg.New()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-
 	itemRef, err := firebase.NewDatabaseRef(
 		firebase.GoogleServiceAccountCredentialsJSON([]byte(config.GetKey("firebase.itemcreds"))),
 	)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-
-	return &Server{
+	return &server{
 		config:  config,
 		itemRef: itemRef,
-	}, nil
+	}
 }
 
 // ListItem get list of item that matches with provided criteria.
-func (s *Server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListResponse, error) {
+func (s *server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListResponse, error) {
 	var err error
 	var res pb.ListResponse
 
@@ -74,7 +82,7 @@ func (s *Server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListRes
 }
 
 // AddItem add new item to datebase.
-func (s *Server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddResponse, error) {
+func (s *server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddResponse, error) {
 	var err error
 	var res pb.AddResponse
 
@@ -92,7 +100,7 @@ func (s *Server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddRespon
 }
 
 // GetItem get single item that matches with provided criteria.
-func (s *Server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
+func (s *server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
 	var err error
 	var res pb.GetResponse
 
@@ -109,4 +117,17 @@ func (s *Server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 		NotesMd: item.NotesMD,
 	}
 	return &res, nil
+}
+
+func main() {
+	flag.Parse()
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	server := grpc.NewServer()
+
+	pb.RegisterItemServiceServer(server, newServer())
+	server.Serve(lis)
 }

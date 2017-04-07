@@ -1,17 +1,18 @@
-package item
+package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"testing"
+
+	"golang.org/x/net/context"
 
 	"github.com/knq/firebase"
 	pb "github.com/rnd/kudu-proto/item"
 	pt "github.com/rnd/kudu-proto/types"
 )
 
-var server *Server
+var testServer *server
 var defaultContext, defaultCancel = context.WithCancel(context.Background())
 
 func mockData() {
@@ -32,7 +33,7 @@ func mockData() {
 
 	for _, test := range testData {
 		req.Item = &test
-		_, err := server.AddItem(defaultContext, &req)
+		_, err := testServer.AddItem(defaultContext, &req)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -43,13 +44,13 @@ func clearData() {
 	var err error
 
 	keys := make(map[string]interface{})
-	err = server.itemRef.Ref("/item").Get(&keys, firebase.Shallow)
+	err = testServer.itemRef.Ref("/item").Get(&keys, firebase.Shallow)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for key := range keys {
-		err = server.itemRef.Ref("/item/" + key).Remove()
+		err = testServer.itemRef.Ref("/item/" + key).Remove()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -57,12 +58,7 @@ func clearData() {
 }
 
 func TestMain(m *testing.M) {
-	var err error
-
-	server, err = New()
-	if err != nil {
-		log.Fatal(err)
-	}
+	testServer = newServer()
 
 	clearData()
 	mockData()
@@ -78,7 +74,7 @@ func TestListItem(t *testing.T) {
 		Goal: "Foo",
 		Tag:  "Bar",
 	}
-	res, err := server.ListItem(defaultContext, &test)
+	res, err := testServer.ListItem(defaultContext, &test)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +93,7 @@ func TestAddItem(t *testing.T) {
 		Tag:   "Bar",
 		Notes: "# Baz",
 	}
-	res, err := server.AddItem(defaultContext, &req)
+	res, err := testServer.AddItem(defaultContext, &req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,13 +107,13 @@ func TestGetItem(t *testing.T) {
 	var err error
 
 	keys := make(map[string]interface{})
-	err = server.itemRef.Ref("/item").Get(&keys, firebase.Shallow)
+	err = testServer.itemRef.Ref("/item").Get(&keys, firebase.Shallow)
 	if err != nil {
 		t.Fatal("Failed to get item keys")
 	}
 
 	for key := range keys {
-		res, err := server.GetItem(defaultContext, &pb.GetRequest{Id: key})
+		res, err := testServer.GetItem(defaultContext, &pb.GetRequest{Id: key})
 		if err != nil {
 			t.Errorf("Got error on get item with key: %s, %v", key, err)
 		}
