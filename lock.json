@@ -1,5 +1,5 @@
 {
-    "memo": "1c11620a102d62d2c4c10310719bdd334c3dad4038778cd77350adb7b560ee9e",
+    "memo": "4bd6dc249fdb956064bb910ccd8eb6e2860aad9287cb03b0b01ae5f45d201ee9",
     "projects": [
         {
             "name": "cloud.google.com/go",
@@ -73,7 +73,7 @@
         {
             "name": "github.com/rnd/kudu-proto",
             "branch": "master",
-            "revision": "d62c79537267dca505f133593820e8381fd6378c",
+            "revision": "4a6b640f55e84c4028840c4d155c50f9bd417aff",
             "packages": [
                 "item",
                 "types"
@@ -82,7 +82,7 @@
         {
             "name": "golang.org/x/net",
             "branch": "master",
-            "revision": "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d",
+            "revision": "d1e1b351919c6738fdeb9893d5c998b161464f0c",
             "packages": [
                 "context",
                 "context/ctxhttp",
@@ -141,8 +141,8 @@
         },
         {
             "name": "google.golang.org/grpc",
-            "version": "v1.2.0",
-            "revision": "cdee119ee21e61eef7093a41ba148fa83585e143",
+            "version": "v1.2.1",
+            "revision": "8050b9cbc271307e5a716a9d782803d09b0d6f2d",
             "packages": [
                 ".",
                 "codes",
