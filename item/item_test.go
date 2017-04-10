@@ -23,11 +23,13 @@ func mockData() {
 			Goal:  "Foo",
 			Tag:   "Bar",
 			Notes: "# Baz",
+			Url:   "brank.as",
 		},
 		{
 			Goal:  "Kudu",
 			Tag:   "App",
 			Notes: "## Test",
+			Url:   "google.com",
 		},
 	}
 
@@ -92,6 +94,7 @@ func TestAddItem(t *testing.T) {
 		Goal:  "Foo",
 		Tag:   "Bar",
 		Notes: "# Baz",
+		Url:   "reddit.com",
 	}
 	res, err := testServer.AddItem(defaultContext, &req)
 	if err != nil {

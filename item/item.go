@@ -24,6 +24,7 @@ var (
 // Item represents firebase database model for item database ref.
 type Item struct {
 	Goal    string                   `json:"goal"`
+	URL     string                   `json:"url"`
 	Tag     string                   `json:"tag"`
 	Notes   string                   `json:"notes"`
 	NotesMD string                   `json:"notes_md"`
@@ -73,6 +74,7 @@ func (s *server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListRes
 	for _, item := range items {
 		res.Items = append(res.Items, &pt.Item{
 			Goal:    item.Goal,
+			Url:     item.URL,
 			Tag:     item.Tag,
 			Notes:   item.Notes,
 			NotesMd: item.NotesMD,
@@ -88,6 +90,7 @@ func (s *server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddRespon
 
 	item := &Item{
 		Goal:  req.Item.Goal,
+		URL:   req.Item.Url,
 		Tag:   req.Item.Tag,
 		Notes: req.Item.Notes,
 	}
@@ -112,6 +115,7 @@ func (s *server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 
 	res.Item = &pt.Item{
 		Goal:    item.Goal,
+		Url:     item.URL,
 		Tag:     item.Tag,
 		Notes:   item.Notes,
 		NotesMd: item.NotesMD,
