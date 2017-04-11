@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -13,7 +14,9 @@ import (
 )
 
 var testServer *server
-var defaultContext, defaultCancel = context.WithCancel(context.Background())
+var defaultContext context.Context
+var defaultCancel context.CancelFunc
+var userId string
 
 func mockData() {
 	var req pb.AddRequest
@@ -45,14 +48,16 @@ func mockData() {
 func clearData() {
 	var err error
 
+	path := fmt.Sprintf(itemRef, userId)
+
 	keys := make(map[string]interface{})
-	err = testServer.itemRef.Ref("/item").Get(&keys, firebase.Shallow)
+	err = testServer.itemRef.Ref(path).Get(&keys, firebase.Shallow)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for key := range keys {
-		err = testServer.itemRef.Ref("/item/" + key).Remove()
+		err = testServer.itemRef.Ref(path + key).Remove()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -62,8 +67,13 @@ func clearData() {
 func TestMain(m *testing.M) {
 	testServer = newServer()
 
+	//TODO: Fix this by fetch test user id.
+	userId = "foo"
+	defaultContext, defaultCancel = context.WithCancel(context.WithValue(context.Background(), "userid", userId))
+
 	clearData()
 	mockData()
+
 	code := m.Run()
 
 	os.Exit(code)
