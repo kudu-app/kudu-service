@@ -1,5 +1,5 @@
 {
-    "memo": "4f990dff043faf1b975b36d5c35aa25c2b0631898e3ea22473b1a7872551a5e0",
+    "memo": "c4042db8c468b8d334644920e50cb6af64e6738232df1c156c897de101979dbe",
     "projects": [
         {
             "name": "cloud.google.com/go",
@@ -77,6 +77,14 @@
             "packages": [
                 "item",
                 "types"
+            ]
+        },
+        {
+            "name": "github.com/rnd/kudu-service",
+            "branch": "master",
+            "revision": "1c3b70da07089ba13a729b3709c9dd13acd6e0c7",
+            "packages": [
+                "auth"
             ]
         },
         {

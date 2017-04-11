@@ -1,0 +1,50 @@
+{
+    "memo": "",
+    "projects": [
+        {
+            "name": "github.com/golang/protobuf",
+            "branch": "master",
+            "revision": "c9c7427a2a70d2eb3bafa0ab2dc163e45f143317",
+            "packages": [
+                "proto"
+            ]
+        },
+        {
+            "name": "github.com/knq/jwt",
+            "branch": "master",
+            "revision": "b8acfb9b22cac2bd72f7d7555c46664a5df3d2a6",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/knq/pemutil",
+            "branch": "master",
+            "revision": "a128105dd4897e4b763d54cb548222f70c4a6622",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "golang.org/x/net",
+            "branch": "master",
+            "revision": "a6577fac2d73be281a500b310739095313165611",
+            "packages": [
+                "context",
+                "http2",
+                "http2/hpack",
+                "trace"
+            ]
+        },
+        {
+            "name": "google.golang.org/grpc",
+            "branch": "master",
+            "revision": "cdee119ee21e61eef7093a41ba148fa83585e143",
+            "packages": [
+                ".",
+                "codes",
+                "metadata"
+            ]
+        }
+    ]
+}

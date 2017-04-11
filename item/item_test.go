@@ -11,6 +11,7 @@ import (
 	"github.com/knq/firebase"
 	pb "github.com/rnd/kudu-proto/item"
 	pt "github.com/rnd/kudu-proto/types"
+	"github.com/rnd/kudu-service/auth"
 )
 
 var testServer *server
@@ -69,7 +70,7 @@ func TestMain(m *testing.M) {
 
 	//TODO: Fix this by fetch test user id.
 	userId = "foo"
-	defaultContext, defaultCancel = context.WithCancel(context.WithValue(context.Background(), "userid", userId))
+	defaultContext, defaultCancel = context.WithCancel(context.WithValue(context.Background(), auth.UserIDKey, userId))
 
 	clearData()
 	mockData()

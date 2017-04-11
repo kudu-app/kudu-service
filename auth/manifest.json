@@ -1,0 +1,13 @@
+{
+    "dependencies": {
+        "github.com/knq/jwt": {
+            "branch": "master"
+        },
+        "golang.org/x/net": {
+            "branch": "master"
+        },
+        "google.golang.org/grpc": {
+            "branch": "master"
+        }
+    }
+}

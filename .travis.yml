@@ -11,6 +11,7 @@ before_install:
 - go get -u github.com/golang/dep/...
 - go get github.com/mattn/goveralls
 script:
-- dep ensure
+- cd auth && dep ensure
+- cd ../item && dep ensure
 - go test -v $(go list ./... | grep -v /vendor)
 - goveralls -service=travis-ci
