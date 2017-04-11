@@ -4,20 +4,15 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
 
 	"golang.org/x/net/context"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-
 	"github.com/knq/envcfg"
 	"github.com/knq/firebase"
-	"github.com/knq/jwt"
 
 	pb "github.com/rnd/kudu-proto/item"
 	pt "github.com/rnd/kudu-proto/types"
+	"github.com/rnd/kudu-service/auth"
 )
 
 var (
@@ -70,7 +65,7 @@ func (s *server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListRes
 	var err error
 	var res pb.ListResponse
 
-	userId := ctx.Value("userid").(string)
+	userId := ctx.Value(auth.UserIDKey).(string)
 	path := fmt.Sprintf(itemRef, userId)
 
 	items := make(map[string]Item)
@@ -96,7 +91,7 @@ func (s *server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddRespon
 	var err error
 	var res pb.AddResponse
 
-	userId := ctx.Value("userid").(string)
+	userId := ctx.Value(auth.UserIDKey).(string)
 	path := fmt.Sprintf(itemRef, userId)
 
 	item := &Item{
@@ -118,7 +113,7 @@ func (s *server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 	var err error
 	var res pb.GetResponse
 
-	userId := ctx.Value("userid").(string)
+	userId := ctx.Value(auth.UserIDKey).(string)
 	path := fmt.Sprintf(itemRef, userId)
 
 	var item Item
@@ -135,42 +130,4 @@ func (s *server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 		NotesMd: item.NotesMD,
 	}
 	return &res, nil
-}
-
-// authUnaryInterceptor is grpc middleware that responsible to handle authentication,
-// by parsing the token field from metadata.
-func authUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	var err error
-
-	md, ok := metadata.FromContext(ctx)
-	if !ok {
-		return nil, grpc.Errorf(codes.DataLoss, "auth unary interceptor: failed to get metadata")
-	}
-
-	var userId string
-	if token, ok := md["token"]; ok {
-		userId, err = jwt.PeekPayloadField([]byte(token[0]), "uid")
-		if err != nil {
-			return nil, err
-		}
-		newCtx := context.WithValue(ctx, "userid", userId)
-		return handler(newCtx, req)
-	}
-	return nil, grpc.Errorf(codes.Unauthenticated, "authentication required")
-}
-
-func main() {
-	flag.Parse()
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	var opts []grpc.ServerOption
-	opts = append(opts, grpc.UnaryInterceptor(authUnaryInterceptor))
-	server := grpc.NewServer(opts...)
-
-	pb.RegisterItemServiceServer(server, newServer())
-	server.Serve(lis)
 }
