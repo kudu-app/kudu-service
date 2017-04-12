@@ -13,7 +13,6 @@ import (
 
 	"github.com/rnd/kudu-service/auth"
 	pb "github.com/rnd/kudu/golang/protogen/item"
-	pdate "github.com/rnd/kudu/golang/protogen/type/date"
 )
 
 var (
@@ -30,7 +29,6 @@ type Item struct {
 	Notes   string                   `json:"notes"`
 	NotesMD string                   `json:"notes_md"`
 	Created firebase.ServerTimestamp `json:"created"`
-	Date    firebase.Time            `json:"date"`
 }
 
 // server is gRPC server.
@@ -69,9 +67,16 @@ func (s *server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListRes
 
 	userId := ctx.Value(auth.UserIDKey).(string)
 	path := fmt.Sprintf(itemRef, userId)
+	date := time.Date(
+		int(req.Date.GetYear()),
+		time.Month(req.Date.GetMonth()),
+		int(req.Date.GetDay()),
+		0, 0, 0, 0,
+		time.UTC,
+	)
 
 	items := make(map[string]Item)
-	err = s.itemRef.Ref(path).Get(&items)
+	err = s.itemRef.Ref(path + date.Format("20060102")).Get(&items)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,11 +88,6 @@ func (s *server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListRes
 			Tag:     item.Tag,
 			Notes:   item.Notes,
 			NotesMd: item.NotesMD,
-			Date: &pdate.Date{
-				Year:  int32(item.Date.Time().Year()),
-				Month: int32(item.Date.Time().Month()),
-				Day:   int32(item.Date.Time().Day()),
-			},
 		})
 	}
 	return &res, nil
@@ -100,24 +100,21 @@ func (s *server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddRespon
 
 	userId := ctx.Value(auth.UserIDKey).(string)
 	path := fmt.Sprintf(itemRef, userId)
-
-	date, err := time.Parse("20060102",
-		fmt.Sprintf("%d%02d%02d",
-			req.Item.Date.GetYear(),
-			req.Item.Date.GetMonth(),
-			req.Item.Date.GetDay()))
-	if err != nil {
-		return nil, err
-	}
+	date := time.Date(
+		int(req.Item.Date.GetYear()),
+		time.Month(req.Item.Date.GetMonth()),
+		int(req.Item.Date.GetDay()),
+		0, 0, 0, 0,
+		time.UTC,
+	)
 
 	item := &Item{
 		Goal:  req.Item.Goal,
 		URL:   req.Item.Url,
 		Tag:   req.Item.Tag,
 		Notes: req.Item.Notes,
-		Date:  firebase.Time(date),
 	}
-	id, err := s.itemRef.Ref(path).Push(item)
+	id, err := s.itemRef.Ref(path + date.Format("20060102")).Push(item)
 	if err != nil {
 		return nil, err
 	}
@@ -145,11 +142,6 @@ func (s *server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 		Tag:     item.Tag,
 		Notes:   item.Notes,
 		NotesMd: item.NotesMD,
-		Date: &pdate.Date{
-			Year:  int32(item.Date.Time().Year()),
-			Month: int32(item.Date.Time().Month()),
-			Day:   int32(item.Date.Time().Day()),
-		},
 	}
 	return &res, nil
 }

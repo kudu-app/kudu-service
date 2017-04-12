@@ -5,35 +5,47 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"golang.org/x/net/context"
 
 	"github.com/knq/firebase"
-	pb "github.com/rnd/kudu-proto/item"
-	pt "github.com/rnd/kudu-proto/types"
 	"github.com/rnd/kudu-service/auth"
+	pb "github.com/rnd/kudu/golang/protogen/item"
+	pdate "github.com/rnd/kudu/golang/protogen/type/date"
 )
 
 var testServer *server
 var defaultContext context.Context
 var defaultCancel context.CancelFunc
-var userId string
+var userID string
+var now = time.Now()
 
 func mockData() {
 	var req pb.AddRequest
 
-	testData := []pt.Item{
+	testData := []pb.Item{
 		{
 			Goal:  "Foo",
 			Tag:   "Bar",
 			Notes: "# Baz",
 			Url:   "brank.as",
+			Date: &pdate.Date{
+				Year:  int32(now.Year()),
+				Month: int32(now.Month()),
+				Day:   int32(now.Day()),
+			},
 		},
 		{
 			Goal:  "Kudu",
 			Tag:   "App",
 			Notes: "## Test",
 			Url:   "google.com",
+			Date: &pdate.Date{
+				Year:  int32(now.Year()),
+				Month: int32(now.Month()),
+				Day:   int32(now.Day() + 1),
+			},
 		},
 	}
 
@@ -49,7 +61,7 @@ func mockData() {
 func clearData() {
 	var err error
 
-	path := fmt.Sprintf(itemRef, userId)
+	path := fmt.Sprintf(itemRef, userID)
 
 	keys := make(map[string]interface{})
 	err = testServer.itemRef.Ref(path).Get(&keys, firebase.Shallow)
@@ -69,8 +81,8 @@ func TestMain(m *testing.M) {
 	testServer = newServer()
 
 	//TODO: Fix this by fetch test user id.
-	userId = "foo"
-	defaultContext, defaultCancel = context.WithCancel(context.WithValue(context.Background(), auth.UserIDKey, userId))
+	userID = "foo"
+	defaultContext, defaultCancel = context.WithCancel(context.WithValue(context.Background(), auth.UserIDKey, userID))
 
 	clearData()
 	mockData()
@@ -86,14 +98,19 @@ func TestListItem(t *testing.T) {
 	test := pb.ListRequest{
 		Goal: "Foo",
 		Tag:  "Bar",
+		Date: &pdate.Date{
+			Year:  int32(now.Year()),
+			Month: int32(now.Month()),
+			Day:   int32(now.Day()),
+		},
 	}
 	res, err := testServer.ListItem(defaultContext, &test)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if len(res.Items) != 2 {
-		t.Errorf("Expected list to have 2 items, got: %d", len(res.Items))
+	if len(res.Items) != 1 {
+		t.Errorf("Expected list to have 1 items, got: %d", len(res.Items))
 	}
 }
 
@@ -101,11 +118,17 @@ func TestAddItem(t *testing.T) {
 	var err error
 	var req pb.AddRequest
 
-	req.Item = &pt.Item{
+	now := time.Now()
+	req.Item = &pb.Item{
 		Goal:  "Foo",
 		Tag:   "Bar",
 		Notes: "# Baz",
 		Url:   "reddit.com",
+		Date: &pdate.Date{
+			Year:  int32(now.Year()),
+			Month: int32(now.Month()),
+			Day:   int32(now.Day() + 2),
+		},
 	}
 	res, err := testServer.AddItem(defaultContext, &req)
 	if err != nil {
@@ -120,19 +143,12 @@ func TestAddItem(t *testing.T) {
 func TestGetItem(t *testing.T) {
 	var err error
 
-	keys := make(map[string]interface{})
-	err = testServer.itemRef.Ref("/item").Get(&keys, firebase.Shallow)
+	date := now.Format("20060102")
+	res, err := testServer.GetItem(defaultContext, &pb.GetRequest{Id: date})
 	if err != nil {
-		t.Fatal("Failed to get item keys")
+		t.Errorf("Got error on get item on date: %s, %v", date, err)
 	}
-
-	for key := range keys {
-		res, err := testServer.GetItem(defaultContext, &pb.GetRequest{Id: key})
-		if err != nil {
-			t.Errorf("Got error on get item with key: %s, %v", key, err)
-		}
-		if res.Item == nil {
-			t.Error("Expected response item to not empty")
-		}
+	if res.Item == nil {
+		t.Error("Expected response item to not empty")
 	}
 }

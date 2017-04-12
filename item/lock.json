@@ -1,5 +1,5 @@
 {
-    "memo": "c4042db8c468b8d334644920e50cb6af64e6738232df1c156c897de101979dbe",
+    "memo": "a203b1cdc18973294438244c5f1c691bd5175bc8cbba84a2f25201725d07c336",
     "projects": [
         {
             "name": "cloud.google.com/go",
@@ -15,8 +15,7 @@
             "branch": "master",
             "revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
             "packages": [
-                "proto",
-                "ptypes/timestamp"
+                "proto"
             ]
         },
         {
@@ -71,18 +70,18 @@
             ]
         },
         {
-            "name": "github.com/rnd/kudu-proto",
+            "name": "github.com/rnd/kudu",
             "branch": "master",
-            "revision": "4a6b640f55e84c4028840c4d155c50f9bd417aff",
+            "revision": "02ab9a479b881a449486cf5a3366809a021f2196",
             "packages": [
-                "item",
-                "types"
+                "golang/protogen/item",
+                "golang/protogen/type/date"
             ]
         },
         {
             "name": "github.com/rnd/kudu-service",
             "branch": "master",
-            "revision": "1c3b70da07089ba13a729b3709c9dd13acd6e0c7",
+            "revision": "dae0bbec749b95b6b618e62b95b00051ef32b2da",
             "packages": [
                 "auth"
             ]
