@@ -8,8 +8,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "github.com/rnd/kudu-proto/item"
 	"github.com/rnd/kudu-service/auth"
+	pb "github.com/rnd/kudu/golang/protogen/item"
 )
 
 func main() {
