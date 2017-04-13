@@ -13,5 +13,5 @@ before_install:
 script:
 - cd auth && dep ensure
 - cd ../item && dep ensure
-- go test -v $(go list ./... | grep -v /vendor)
+- go test -race -v $(go list ./... | grep -v /vendor)
 - goveralls -service=travis-ci
