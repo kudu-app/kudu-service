@@ -58,7 +58,7 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
   branch = "master"
   name = "github.com/rnd/kudu-service"
   packages = ["auth"]
-  revision = "1874973e9b1d020c4b78fad46a4f4dd4fd1e5aae"
+  revision = "3eff606ad6f28299d11062957f1417eec88c03cb"
 
 [[projects]]
   branch = "master"

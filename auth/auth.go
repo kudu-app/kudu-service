@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"strings"
+
 	"golang.org/x/net/context"
 
 	"github.com/knq/jwt"
@@ -27,8 +29,12 @@ func UnaryInterceptor() grpc.UnaryServerInterceptor {
 		}
 
 		var userID string
-		if token, ok := md["token"]; ok {
-			userID, err = jwt.PeekPayloadField([]byte(token[0]), "uid")
+		if auth, ok := md["authorization"]; ok {
+			token := strings.Fields(auth[0])
+			if len(token) != 2 {
+				return nil, grpc.Errorf(codes.Unauthenticated, "invalid token format")
+			}
+			userID, err = jwt.PeekPayloadField([]byte(token[1]), "uid")
 			if err != nil {
 				return nil, grpc.Errorf(codes.Unauthenticated, "failed to get user ID")
 			}
