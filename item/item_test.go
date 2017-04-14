@@ -80,7 +80,7 @@ func clearData() {
 func TestMain(m *testing.M) {
 	testServer = newServer()
 
-	//TODO: Fix this by fetch test user id.
+	//TODO: Replace dummy user ID.
 	userID = "foo"
 	defaultContext, defaultCancel = context.WithCancel(context.WithValue(context.Background(), auth.UserIDKey, userID))
 

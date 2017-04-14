@@ -1,4 +1,4 @@
-memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
+memo = "36e8541f23d43e05d4ce67257aef24b106220f3143121d15e6d368757a2ff05e"
 
 [[projects]]
   name = "cloud.google.com/go"
@@ -58,13 +58,13 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
   branch = "master"
   name = "github.com/rnd/kudu-service"
   packages = ["auth"]
-  revision = "957089767a829254a162123927eab03adcb696ba"
+  revision = "1a501243c388b662d0aca329bae3a32b4bc2174e"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
-  revision = "d1e1b351919c6738fdeb9893d5c998b161464f0c"
+  revision = "5602c733f70afc6dcec6766be0d5034d4c4f14de"
 
 [[projects]]
   branch = "master"
@@ -94,4 +94,4 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
   branch = "master"
   name = "google.golang.org/grpc"
   packages = [".","codes","credentials","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "0e8b58d22f34640cb17dbbed1c8aef3b8dcc0e97"
+  revision = "8a6eb0f6e96a246c7c655b0207b62255042f6fbd"

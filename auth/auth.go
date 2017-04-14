@@ -17,26 +17,6 @@ const UserIDKey key = 1
 
 // UnaryInterceptor is grpc interceptor that responsible to handle authentication,
 // by parsing the token field from metadata.
-// func UnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-// 	var err error
-
-// 	md, ok := metadata.FromContext(ctx)
-// 	if !ok {
-// 		return nil, grpc.Errorf(codes.DataLoss, "auth unary interceptor: failed to get metadata")
-// 	}
-
-// 	var userID string
-// 	if token, ok := md["token"]; ok {
-// 		userID, err = jwt.PeekPayloadField([]byte(token[0]), "uid")
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		newCtx := context.WithValue(ctx, UserIDKey, userID)
-// 		return handler(newCtx, req)
-// 	}
-// 	return nil, grpc.Errorf(codes.Unauthenticated, "authentication required")
-// }
-
 func UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		var err error
@@ -50,7 +30,7 @@ func UnaryInterceptor() grpc.UnaryServerInterceptor {
 		if token, ok := md["token"]; ok {
 			userID, err = jwt.PeekPayloadField([]byte(token[0]), "uid")
 			if err != nil {
-				return nil, err
+				return nil, grpc.Errorf(codes.Unauthenticated, "failed to get user ID")
 			}
 			newCtx := context.WithValue(ctx, UserIDKey, userID)
 			return handler(newCtx, req)
