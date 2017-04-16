@@ -11,6 +11,12 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+// Credential holds user confidential access information.
+type Credential struct {
+	Email    string `json:"email"`
+	Password string `json:"passworf"`
+}
+
 // key is context key.
 type key int
 

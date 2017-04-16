@@ -42,8 +42,6 @@ type server struct {
 
 // newServer creates new instance of item server.
 func newServer() *server {
-	var err error
-
 	config, err := envcfg.New()
 	if err != nil {
 		log.Fatal(err)

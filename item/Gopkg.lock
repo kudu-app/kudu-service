@@ -9,7 +9,7 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
 [[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
-  packages = ["proto","ptypes/any"]
+  packages = ["proto","ptypes/any","ptypes/timestamp"]
   revision = "2bba0603135d7d7f5cb73b2125beeda19c09f4ef"
 
 [[projects]]
@@ -52,13 +52,13 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
   branch = "master"
   name = "github.com/rnd/kudu"
   packages = ["golang/protogen/item","golang/protogen/type/date"]
-  revision = "02ab9a479b881a449486cf5a3366809a021f2196"
+  revision = "0627106c8bf6e83acc1101ce96f0d5f2c4528583"
 
 [[projects]]
   branch = "master"
   name = "github.com/rnd/kudu-service"
   packages = ["auth"]
-  revision = "3eff606ad6f28299d11062957f1417eec88c03cb"
+  revision = "51e580b82a9d22c469e6be3296d772629eaf80df"
 
 [[projects]]
   branch = "master"
