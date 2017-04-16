@@ -9,7 +9,6 @@ import (
 	"github.com/knq/envcfg"
 	"github.com/knq/firebase"
 
-	"github.com/rnd/kudu-service/auth"
 	pb "github.com/rnd/kudu/golang/protogen/user"
 )
 
@@ -59,16 +58,16 @@ func (s *server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 	var err error
 	var res pb.RegisterResponse
 
-	user := &User{
-		Username:  req.User.Username,
-		FirstName: req.User.FirstName,
-		LastName:  req.User.LastName,
-	}
+	// user := &User{
+	// 	Username:  req.User.Username,
+	// 	FirstName: req.User.FirstName,
+	// 	LastName:  req.User.LastName,
+	// }
 
-	creds := &auth.Credential{
-		Email:    req.Credential.Email,
-		Password: req.Credential.Password,
-	}
+	// creds := &auth.Credential{
+	// 	Email:    req.Credential.Email,
+	// 	Password: req.Credential.Password,
+	// }
 
 	// TODO:
 	// - check if username already taken
@@ -76,7 +75,7 @@ func (s *server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 	// - set user
 	// - set credential
 
-	return &res, nil
+	return &res, err
 }
 
 // Login validates user claims and generate jwt token.
@@ -84,5 +83,5 @@ func (s *server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 	var err error
 	var res pb.LoginResponse
 
-	return &res, nil
+	return &res, err
 }
