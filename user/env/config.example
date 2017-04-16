@@ -1,0 +1,4 @@
+; kudu user service settings
+
+[firebase]
+usercreds="$FIREBASE_USER_CREDS||./creds/usercreds.json||file"
