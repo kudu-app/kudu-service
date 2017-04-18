@@ -1,4 +1,7 @@
 ; kudu item service settings
 
+[server]
+port="$PORT||9112"
+
 [firebase]
 itemcreds="$FIREBASE_ITEM_CREDS||./creds/itemcreds.json||file"

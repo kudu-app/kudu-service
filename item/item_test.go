@@ -15,7 +15,7 @@ import (
 	pdate "github.com/rnd/kudu/golang/protogen/type/date"
 )
 
-var testServer *server
+var testService *service
 var defaultContext context.Context
 var defaultCancel context.CancelFunc
 var userID string
@@ -51,7 +51,7 @@ func mockData() {
 
 	for _, test := range testData {
 		req.Item = &test
-		_, err := testServer.AddItem(defaultContext, &req)
+		_, err := testService.AddItem(defaultContext, &req)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -64,13 +64,13 @@ func clearData() {
 	path := fmt.Sprintf(itemRef, userID)
 
 	keys := make(map[string]interface{})
-	err = testServer.itemRef.Ref(path).Get(&keys, firebase.Shallow)
+	err = testService.itemRef.Ref(path).Get(&keys, firebase.Shallow)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for key := range keys {
-		err = testServer.itemRef.Ref(path + key).Remove()
+		err = testService.itemRef.Ref(path + key).Remove()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -78,7 +78,7 @@ func clearData() {
 }
 
 func TestMain(m *testing.M) {
-	testServer = newServer()
+	testService = newService()
 
 	//TODO: Replace dummy user ID.
 	userID = "foo"
@@ -104,7 +104,7 @@ func TestListItem(t *testing.T) {
 			Day:   int32(now.Day()),
 		},
 	}
-	res, err := testServer.ListItem(defaultContext, &test)
+	res, err := testService.ListItem(defaultContext, &test)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -130,7 +130,7 @@ func TestAddItem(t *testing.T) {
 			Day:   int32(now.Day() + 2),
 		},
 	}
-	res, err := testServer.AddItem(defaultContext, &req)
+	res, err := testService.AddItem(defaultContext, &req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -144,7 +144,7 @@ func TestGetItem(t *testing.T) {
 	var err error
 
 	date := now.Format("20060102")
-	res, err := testServer.GetItem(defaultContext, &pb.GetRequest{Id: date})
+	res, err := testService.GetItem(defaultContext, &pb.GetRequest{Id: date})
 	if err != nil {
 		t.Errorf("Got error on get item on date: %s, %v", date, err)
 	}

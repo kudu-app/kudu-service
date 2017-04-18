@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"time"
@@ -13,10 +12,6 @@ import (
 
 	"github.com/rnd/kudu-service/auth"
 	pb "github.com/rnd/kudu/golang/protogen/item"
-)
-
-var (
-	port = flag.Int("port", 50051, "Item server port")
 )
 
 const itemRef = "/data/%s/items/"
@@ -31,8 +26,8 @@ type Item struct {
 	Created firebase.ServerTimestamp `json:"created"`
 }
 
-// server is gRPC server.
-type server struct {
+// service is gRPC server.
+type service struct {
 	// config is server environment config.
 	config *envcfg.Envcfg
 
@@ -40,8 +35,8 @@ type server struct {
 	itemRef *firebase.DatabaseRef
 }
 
-// newServer creates new instance of item server.
-func newServer() *server {
+// newService creates new instance of item server.
+func newService() *service {
 	config, err := envcfg.New()
 	if err != nil {
 		log.Fatal(err)
@@ -52,14 +47,14 @@ func newServer() *server {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &server{
+	return &service{
 		config:  config,
 		itemRef: itemRef,
 	}
 }
 
 // ListItem get list of item that matches with provided criteria.
-func (s *server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListResponse, error) {
+func (s *service) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListResponse, error) {
 	var err error
 	var res pb.ListResponse
 
@@ -92,7 +87,7 @@ func (s *server) ListItem(ctx context.Context, req *pb.ListRequest) (*pb.ListRes
 }
 
 // AddItem add new item to datebase.
-func (s *server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddResponse, error) {
+func (s *service) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddResponse, error) {
 	var err error
 	var res pb.AddResponse
 
@@ -121,7 +116,7 @@ func (s *server) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddRespon
 }
 
 // GetItem get single item that matches with provided criteria.
-func (s *server) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
+func (s *service) GetItem(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
 	var err error
 	var res pb.GetResponse
 
