@@ -1,87 +1,170 @@
 package main
 
 import (
-	"flag"
+	"encoding/json"
+	"fmt"
 	"log"
+	"strconv"
+	"time"
 
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 
 	"github.com/knq/envcfg"
 	"github.com/knq/firebase"
+	"github.com/knq/jwt"
 
+	pstatus "github.com/rnd/kudu/golang/protogen/type/status"
 	pb "github.com/rnd/kudu/golang/protogen/user"
 )
 
-var (
-	port = flag.Int("port", 50052, "User server port")
-)
-
-const userRef = "/user/%s"
-
 // User represents firebase database model for user database ref.
 type User struct {
-	Username  string                   `json:"username"`
 	FirstName string                   `json:"first_name"`
 	LastName  string                   `json:"last_name"`
 	Created   firebase.ServerTimestamp `json:"created"`
 }
 
-// server is gRPC server.
-type server struct {
+// service is implementation of user service server.
+type service struct {
 	// config is server environment config.
 	config *envcfg.Envcfg
 
-	// userRef is firebase user database ref.
-	userRef *firebase.DatabaseRef
+	// authRef is kudu-auth firebase database ref.
+	authRef *firebase.DatabaseRef
+
+	// dataRef is kudu-data firebase database ref.
+	dataRef *firebase.DatabaseRef
 }
 
-// newServer creates new instance of user server.
-func newServer() *server {
+// newService creates new instance of user service server.
+func newService() *service {
+	s := new(service)
+
 	config, err := envcfg.New()
 	if err != nil {
 		log.Fatal(err)
 	}
-	userRef, err := firebase.NewDatabaseRef(
-		firebase.GoogleServiceAccountCredentialsJSON([]byte(config.GetKey("firebase.usercreds"))),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return &server{
-		config:  config,
-		userRef: userRef,
-	}
+	s.config = config
+
+	setupDatabase(s)
+	return s
 }
 
 // Register set new user record into user database ref.
-func (s *server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+func (s *service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	var err error
-	var res pb.RegisterResponse
+	res := &pb.RegisterResponse{
+		Status: pstatus.ResponseStatus_ERROR,
+	}
 
-	// user := &User{
-	// 	Username:  req.User.Username,
-	// 	FirstName: req.User.FirstName,
-	// 	LastName:  req.User.LastName,
-	// }
+	// Create user auth record
+	userID, err := s.authRef.Ref("/user").Push(map[string]interface{}{
+		"credentials": map[string]interface{}{
+			"email": map[string]interface{}{
+				req.Credential.Email: true,
+			},
+			"username": map[string]interface{}{
+				req.Credential.Username: true,
+			},
+		},
+	})
 
-	// creds := &auth.Credential{
-	// 	Email:    req.Credential.Email,
-	// 	Password: req.Credential.Password,
-	// }
+	// Hash password
+	passBuf, err := bcrypt.GenerateFromPassword([]byte(req.Credential.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return res, err
+	}
 
-	// TODO:
-	// - check if username already taken
-	// - check if email already taken
-	// - set user
-	// - set credential
+	// Set email credential
+	err = s.authRef.Ref("/credential/email").Set(map[string]interface{}{
+		req.Credential.Email: map[string]interface{}{
+			"secret":  string(passBuf),
+			"user_id": userID,
+		},
+	})
+	if err != nil {
+		return res, err
+	}
 
-	return &res, err
+	// Set username credential
+	err = s.authRef.Ref("/credential/username").Set(map[string]interface{}{
+		req.Credential.Username: map[string]interface{}{
+			"secret":  string(passBuf),
+			"user_id": userID,
+		},
+	})
+	if err != nil {
+		return res, err
+	}
+
+	// Create user data record
+	user := &User{
+		FirstName: req.User.FirstName,
+		LastName:  req.User.LastName,
+	}
+	err = s.dataRef.Ref("/user/" + userID).Set(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &pb.RegisterResponse{
+		Status: pstatus.ResponseStatus_SUCCESS,
+	}, nil
 }
 
 // Login validates user claims and generate jwt token.
-func (s *server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
+func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	var err error
-	var res pb.LoginResponse
+	res := &pb.LoginResponse{
+		Status: pstatus.ResponseStatus_ERROR,
+	}
 
-	return &res, err
+	// TODO: Handle login with username
+
+	// find email / username
+	var creds struct {
+		UserID string `json:"user_id"`
+		Secret string `json:"secret"`
+	}
+	err = s.authRef.Ref("/credential/email/" + req.Credential.Email).Get(&creds)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if creds.UserID == "" {
+		return res, fmt.Errorf("Incorrect username or password")
+	}
+
+	// validate credential
+	err = bcrypt.CompareHashAndPassword([]byte(creds.Secret), []byte(req.Credential.Password))
+	if err != nil {
+		return res, fmt.Errorf("Incorrect username or password")
+	}
+
+	// generate jwt token
+	es384, err := jwt.ES384.New(jwt.PEM{
+		[]byte(s.config.GetKey("jwt.privatekey")),
+		[]byte(s.config.GetKey("jwt.publickey")),
+	})
+	if err != nil {
+		return res, err
+	}
+
+	expr := time.Now().Add(time.Minute * 15)
+
+	claim := &jwt.Claims{
+		Issuer:     creds.UserID,
+		Expiration: json.Number(strconv.FormatInt(expr.Unix(), 10)),
+	}
+
+	tokenBuf, err := es384.Encode(claim)
+	if err != nil {
+		return res, err
+	}
+
+	return &pb.LoginResponse{
+		Status: pstatus.ResponseStatus_SUCCESS,
+		Token:  string(tokenBuf),
+	}, nil
 }

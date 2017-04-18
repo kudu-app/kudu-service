@@ -1,4 +1,4 @@
-memo = "4c297d8648d2c5f168a6f75f228e863e79f353f6f09162914a4b061ec3075726"
+memo = "0af3db47daf959edd8f96a736f2cf19ad575b0b37b685b466acc30da1c7daa4f"
 
 [[projects]]
   name = "cloud.google.com/go"
@@ -51,14 +51,20 @@ memo = "4c297d8648d2c5f168a6f75f228e863e79f353f6f09162914a4b061ec3075726"
 [[projects]]
   branch = "master"
   name = "github.com/rnd/kudu"
-  packages = ["golang/protogen/type/creds","golang/protogen/user"]
-  revision = "0627106c8bf6e83acc1101ce96f0d5f2c4528583"
+  packages = ["golang/protogen/type/creds","golang/protogen/type/status","golang/protogen/user"]
+  revision = "837df51b1b74ffb5e3d885d96858859cf975beb0"
 
 [[projects]]
   branch = "master"
   name = "github.com/rnd/kudu-service"
   packages = ["auth"]
-  revision = "0d1724d5c1b3f27fa2c5b24e79c134be37d2ef20"
+  revision = "c95b48ffd644908fd3221af0d1c35f2c6e560bcd"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["bcrypt","blowfish"]
+  revision = "efac7f277b17c19894091e358c6130cb6bd51117"
 
 [[projects]]
   branch = "master"
@@ -94,4 +100,4 @@ memo = "4c297d8648d2c5f168a6f75f228e863e79f353f6f09162914a4b061ec3075726"
   branch = "master"
   name = "google.golang.org/grpc"
   packages = [".","codes","credentials","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "8a6eb0f6e96a246c7c655b0207b62255042f6fbd"
+  revision = "6914ab1e338c92da4218a23d27fcd03d0ad78d46"

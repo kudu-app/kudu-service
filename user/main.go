@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -13,9 +12,9 @@ import (
 )
 
 func main() {
-	flag.Parse()
+	service := newService()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", service.config.GetInt("server.port")))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -24,6 +23,6 @@ func main() {
 	opts = append(opts, grpc.UnaryInterceptor(auth.UnaryInterceptor()))
 	server := grpc.NewServer(opts...)
 
-	pb.RegisterUserServiceServer(server, newServer())
+	pb.RegisterUserServiceServer(server, service)
 	server.Serve(lis)
 }
