@@ -26,7 +26,7 @@ type Item struct {
 	Created firebase.ServerTimestamp `json:"created"`
 }
 
-// service is gRPC server.
+// service is implementation of item service server.
 type service struct {
 	// config is server environment config.
 	config *envcfg.Envcfg
@@ -35,7 +35,7 @@ type service struct {
 	itemRef *firebase.DatabaseRef
 }
 
-// newService creates new instance of item server.
+// newService creates new instance of item service server.
 func newService() *service {
 	config, err := envcfg.New()
 	if err != nil {

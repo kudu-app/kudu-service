@@ -58,7 +58,7 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
   branch = "master"
   name = "github.com/rnd/kudu-service"
   packages = ["auth"]
-  revision = "51e580b82a9d22c469e6be3296d772629eaf80df"
+  revision = "c95b48ffd644908fd3221af0d1c35f2c6e560bcd"
 
 [[projects]]
   branch = "master"
@@ -94,4 +94,4 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
   branch = "master"
   name = "google.golang.org/grpc"
   packages = [".","codes","credentials","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "8a6eb0f6e96a246c7c655b0207b62255042f6fbd"
+  revision = "955c867061e3b1a5b8f6f07d1efcf1b69af043d8"
