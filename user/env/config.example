@@ -9,4 +9,4 @@ publickey="$JWT_SIGNER_PUBLIC_KEY||./creds/jwt-signer/ecdsa_public.pem||file"
 
 [firebase]
 authcreds="$FIREBASE_USER_CREDS||./creds/authcreds.json||file"
-datacreds="$FIREBASE_USER_CREDS||./creds/datacreds.json||file"
+datacreds="$FIREBASE_DATA_CREDS||./creds/datacreds.json||file"

@@ -4,4 +4,4 @@
 port="$PORT||9112"
 
 [firebase]
-itemcreds="$FIREBASE_ITEM_CREDS||./creds/itemcreds.json||file"
+itemcreds="$FIREBASE_DATA_CREDS||./creds/datacreds.json||file"
