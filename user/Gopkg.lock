@@ -1,4 +1,4 @@
-memo = "943407cf2cd166e2d6776be04843560952dd7e0ae7a99ce2d7a2d3b69b60de13"
+memo = "f54dd4c46f6622aca84c7657daaffd1c86a55d684b34f994a15de4289d490e85"
 
 [[projects]]
   name = "cloud.google.com/go"
@@ -57,8 +57,8 @@ memo = "943407cf2cd166e2d6776be04843560952dd7e0ae7a99ce2d7a2d3b69b60de13"
 [[projects]]
   branch = "master"
   name = "github.com/rnd/kudu-service"
-  packages = ["auth"]
-  revision = "c95b48ffd644908fd3221af0d1c35f2c6e560bcd"
+  packages = ["auth","auth/token"]
+  revision = "082f89d825adfcff620d45456b3f3d3edd5de814"
 
 [[projects]]
   branch = "master"

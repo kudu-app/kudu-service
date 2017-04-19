@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -14,13 +13,15 @@ import (
 
 	"github.com/knq/envcfg"
 	"github.com/knq/firebase"
-	"github.com/knq/jwt"
 
+	"github.com/rnd/kudu-service/auth/token"
 	pb "github.com/rnd/kudu/golang/protogen/user"
 )
 
 var (
-	InvalidCredential = errors.New("Invalid username or password")
+	// ErrInvalidCredential is the error returned when the credentials
+	// is not match.
+	ErrInvalidCredential = errors.New("Invalid username or password")
 )
 
 // User represents firebase database model for user database ref.
@@ -40,20 +41,6 @@ type service struct {
 
 	// dataRef is kudu-data firebase database ref.
 	dataRef *firebase.DatabaseRef
-}
-
-// newService creates new instance of user service server.
-func newService() *service {
-	s := new(service)
-
-	config, err := envcfg.New()
-	if err != nil {
-		log.Fatal(err)
-	}
-	s.config = config
-
-	setupDatabase(s)
-	return s
 }
 
 // Register set new user record into user database ref.
@@ -146,14 +133,14 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 
 	if creds.UserID == "" {
 		res.Status = pb.ResponseStatus_CREDENTIAL_INVALID
-		return res, InvalidCredential
+		return res, ErrInvalidCredential
 	}
 
 	// validate credential
 	err = bcrypt.CompareHashAndPassword([]byte(creds.Secret), []byte(req.Credential.Password))
 	if err != nil {
 		res.Status = pb.ResponseStatus_CREDENTIAL_INVALID
-		return res, InvalidCredential
+		return res, ErrInvalidCredential
 	}
 
 	var user User
@@ -162,35 +149,27 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 		return res, err
 	}
 
-	// generate jwt token
-	es384, err := jwt.ES384.New(jwt.PEM{
-		[]byte(s.config.GetKey("jwt.privatekey")),
-		[]byte(s.config.GetKey("jwt.publickey")),
-	})
-	if err != nil {
-		return res, err
-	}
-
-	// TODO: Set custom claim type.
-	exp := time.Now().Add(time.Minute * 15)
-	claim := map[string]interface{}{
-		"context": map[string]interface{}{
-			"user": map[string]interface{}{
-				"id":           creds.UserID,
-				"display_name": fmt.Sprintf("%s %s", user.FirstName, user.LastName),
-			},
+	// generate token
+	exp := time.Now().Add(token.DefaultExp)
+	claims := &token.Claims{
+		User: token.User{
+			ID:          creds.UserID,
+			DisplayName: fmt.Sprintf("%s %s", user.FirstName, user.LastName),
 		},
-		"iat": json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
-		"exp": json.Number(strconv.FormatInt(exp.Unix(), 10)),
+		IssuedAt:   json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
+		Expiration: json.Number(strconv.FormatInt(exp.Unix(), 10)),
 	}
 
-	tokenBuf, err := es384.Encode(&claim)
+	token, err := token.New(claims,
+		s.config.GetKey("jwt.privatekey"),
+		s.config.GetKey("jwt.publickey"),
+	)
 	if err != nil {
 		return res, err
 	}
 
 	return &pb.LoginResponse{
 		Status: pb.ResponseStatus_SUCCESS,
-		Token:  string(tokenBuf),
+		Token:  token,
 	}, nil
 }

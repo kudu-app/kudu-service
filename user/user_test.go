@@ -104,6 +104,4 @@ func TestLoginWithEmail(t *testing.T) {
 			pb.ResponseStatus_SUCCESS,
 			res.Status)
 	}
-
-	log.Println(res.Token)
 }
