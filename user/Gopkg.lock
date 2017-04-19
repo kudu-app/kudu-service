@@ -1,4 +1,4 @@
-memo = "0af3db47daf959edd8f96a736f2cf19ad575b0b37b685b466acc30da1c7daa4f"
+memo = "943407cf2cd166e2d6776be04843560952dd7e0ae7a99ce2d7a2d3b69b60de13"
 
 [[projects]]
   name = "cloud.google.com/go"
@@ -51,7 +51,7 @@ memo = "0af3db47daf959edd8f96a736f2cf19ad575b0b37b685b466acc30da1c7daa4f"
 [[projects]]
   branch = "master"
   name = "github.com/rnd/kudu"
-  packages = ["golang/protogen/type/creds","golang/protogen/type/status","golang/protogen/user"]
+  packages = ["golang/protogen/type/creds","golang/protogen/user"]
   revision = "1cab6a97f0c37eb7785abc54fbf63359d72d15f1"
 
 [[projects]]
