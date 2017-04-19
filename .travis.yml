@@ -15,6 +15,7 @@ script:
 - cd auth && dep ensure
 - cd ../user && dep ensure
 - go test -race -v $(go list ./... | grep -v /vendor)
+- goveralls -service=travis-ci
 - cd ../item && dep ensure
 - go test -race -v $(go list ./... | grep -v /vendor)
 - goveralls -service=travis-ci
