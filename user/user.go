@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -61,17 +63,23 @@ func (s *service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Re
 		Status: pb.ResponseStatus_INTERNAL_ERROR,
 	}
 
+	encEmail := base64.StdEncoding.EncodeToString([]byte(req.Credential.Email))
+	encUsername := base64.StdEncoding.EncodeToString([]byte(req.Credential.Username))
+
 	// Create user auth record
 	userID, err := s.authRef.Ref("/user").Push(map[string]interface{}{
 		"credentials": map[string]interface{}{
 			"email": map[string]interface{}{
-				req.Credential.Email: true,
+				encEmail: true,
 			},
 			"username": map[string]interface{}{
-				req.Credential.Username: true,
+				encUsername: true,
 			},
 		},
 	})
+	if err != nil {
+		return res, err
+	}
 
 	// Hash password
 	passBuf, err := bcrypt.GenerateFromPassword([]byte(req.Credential.Password), bcrypt.DefaultCost)
@@ -80,8 +88,8 @@ func (s *service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Re
 	}
 
 	// Set email credential
-	err = s.authRef.Ref("/credential/email").Set(map[string]interface{}{
-		req.Credential.Email: map[string]interface{}{
+	err = s.authRef.Ref("/credential/email").Update(map[string]interface{}{
+		encEmail: map[string]interface{}{
 			"secret":  string(passBuf),
 			"user_id": userID,
 		},
@@ -91,8 +99,8 @@ func (s *service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Re
 	}
 
 	// Set username credential
-	err = s.authRef.Ref("/credential/username").Set(map[string]interface{}{
-		req.Credential.Username: map[string]interface{}{
+	err = s.authRef.Ref("/credential/username").Update(map[string]interface{}{
+		encUsername: map[string]interface{}{
 			"secret":  string(passBuf),
 			"user_id": userID,
 		},
@@ -126,11 +134,12 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 	// TODO: Handle login with username
 
 	// find email / username
+	encEmail := base64.StdEncoding.EncodeToString([]byte(req.Credential.Email))
 	var creds struct {
 		UserID string `json:"user_id"`
 		Secret string `json:"secret"`
 	}
-	err = s.authRef.Ref("/credential/email/" + req.Credential.Email).Get(&creds)
+	err = s.authRef.Ref("/credential/email/" + encEmail).Get(&creds)
 	if err != nil {
 		return res, err
 	}
@@ -147,6 +156,12 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 		return res, InvalidCredential
 	}
 
+	var user User
+	err = s.dataRef.Ref("/user/" + creds.UserID).Get(&user)
+	if err != nil {
+		return res, err
+	}
+
 	// generate jwt token
 	es384, err := jwt.ES384.New(jwt.PEM{
 		[]byte(s.config.GetKey("jwt.privatekey")),
@@ -156,13 +171,20 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 		return res, err
 	}
 
-	expr := time.Now().Add(time.Minute * 15)
-	claim := &jwt.Claims{
-		Issuer:     creds.UserID,
-		Expiration: json.Number(strconv.FormatInt(expr.Unix(), 10)),
+	// TODO: Set custom claim type.
+	exp := time.Now().Add(time.Minute * 15)
+	claim := map[string]interface{}{
+		"context": map[string]interface{}{
+			"user": map[string]interface{}{
+				"id":           creds.UserID,
+				"display_name": fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+			},
+		},
+		"iat": json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
+		"exp": json.Number(strconv.FormatInt(exp.Unix(), 10)),
 	}
 
-	tokenBuf, err := es384.Encode(claim)
+	tokenBuf, err := es384.Encode(&claim)
 	if err != nil {
 		return res, err
 	}
