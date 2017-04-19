@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"log"
 	"strconv"
 	"time"
@@ -14,8 +14,11 @@ import (
 	"github.com/knq/firebase"
 	"github.com/knq/jwt"
 
-	pstatus "github.com/rnd/kudu/golang/protogen/type/status"
 	pb "github.com/rnd/kudu/golang/protogen/user"
+)
+
+var (
+	InvalidCredential = errors.New("Invalid username or password")
 )
 
 // User represents firebase database model for user database ref.
@@ -55,7 +58,7 @@ func newService() *service {
 func (s *service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	var err error
 	res := &pb.RegisterResponse{
-		Status: pstatus.ResponseStatus_ERROR,
+		Status: pb.ResponseStatus_INTERNAL_ERROR,
 	}
 
 	// Create user auth record
@@ -105,11 +108,11 @@ func (s *service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Re
 	}
 	err = s.dataRef.Ref("/user/" + userID).Set(user)
 	if err != nil {
-		log.Fatal(err)
+		return res, err
 	}
 
 	return &pb.RegisterResponse{
-		Status: pstatus.ResponseStatus_SUCCESS,
+		Status: pb.ResponseStatus_SUCCESS,
 	}, nil
 }
 
@@ -117,7 +120,7 @@ func (s *service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Re
 func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	var err error
 	res := &pb.LoginResponse{
-		Status: pstatus.ResponseStatus_ERROR,
+		Status: pb.ResponseStatus_INTERNAL_ERROR,
 	}
 
 	// TODO: Handle login with username
@@ -129,17 +132,19 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 	}
 	err = s.authRef.Ref("/credential/email/" + req.Credential.Email).Get(&creds)
 	if err != nil {
-		log.Fatal(err)
+		return res, err
 	}
 
 	if creds.UserID == "" {
-		return res, fmt.Errorf("Incorrect username or password")
+		res.Status = pb.ResponseStatus_CREDENTIAL_INVALID
+		return res, InvalidCredential
 	}
 
 	// validate credential
 	err = bcrypt.CompareHashAndPassword([]byte(creds.Secret), []byte(req.Credential.Password))
 	if err != nil {
-		return res, fmt.Errorf("Incorrect username or password")
+		res.Status = pb.ResponseStatus_CREDENTIAL_INVALID
+		return res, InvalidCredential
 	}
 
 	// generate jwt token
@@ -152,7 +157,6 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 	}
 
 	expr := time.Now().Add(time.Minute * 15)
-
 	claim := &jwt.Claims{
 		Issuer:     creds.UserID,
 		Expiration: json.Number(strconv.FormatInt(expr.Unix(), 10)),
@@ -164,7 +168,7 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 	}
 
 	return &pb.LoginResponse{
-		Status: pstatus.ResponseStatus_SUCCESS,
+		Status: pb.ResponseStatus_SUCCESS,
 		Token:  string(tokenBuf),
 	}, nil
 }
