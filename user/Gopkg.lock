@@ -52,7 +52,7 @@ memo = "0af3db47daf959edd8f96a736f2cf19ad575b0b37b685b466acc30da1c7daa4f"
   branch = "master"
   name = "github.com/rnd/kudu"
   packages = ["golang/protogen/type/creds","golang/protogen/type/status","golang/protogen/user"]
-  revision = "837df51b1b74ffb5e3d885d96858859cf975beb0"
+  revision = "1cab6a97f0c37eb7785abc54fbf63359d72d15f1"
 
 [[projects]]
   branch = "master"
@@ -64,7 +64,7 @@ memo = "0af3db47daf959edd8f96a736f2cf19ad575b0b37b685b466acc30da1c7daa4f"
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["bcrypt","blowfish"]
-  revision = "efac7f277b17c19894091e358c6130cb6bd51117"
+  revision = "12c985af8526c1f6f0c463bbfd9d69623d13b323"
 
 [[projects]]
   branch = "master"
