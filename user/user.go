@@ -24,7 +24,7 @@ var (
 	ErrInvalidCredential = errors.New("Invalid username or password")
 )
 
-// User represents firebase database model for user database ref.
+// User represents firebase database model for user data ref.
 type User struct {
 	FirstName string                   `json:"first_name"`
 	LastName  string                   `json:"last_name"`
