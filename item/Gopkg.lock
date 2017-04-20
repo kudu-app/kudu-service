@@ -1,4 +1,4 @@
-memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
+memo = "2cd59166a621d9c6bccd0addaf16024ae9a53eee2d3f535ab57f44dd387884d2"
 
 [[projects]]
   name = "cloud.google.com/go"
@@ -51,14 +51,14 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
 [[projects]]
   branch = "master"
   name = "github.com/rnd/kudu"
-  packages = ["golang/protogen/item","golang/protogen/type/date"]
-  revision = "0627106c8bf6e83acc1101ce96f0d5f2c4528583"
+  packages = ["golang/protogen/item"]
+  revision = "823a3fe18d9017995f7e4ef1b6c05c2b9f7aacb0"
 
 [[projects]]
   branch = "master"
   name = "github.com/rnd/kudu-service"
   packages = ["auth"]
-  revision = "c95b48ffd644908fd3221af0d1c35f2c6e560bcd"
+  revision = "3494096bfb7ceaddd706dd71093e1709c4dfb80a"
 
 [[projects]]
   branch = "master"
@@ -76,7 +76,7 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "f4b4367115ec2de254587813edaa901bc1c723a8"
+  revision = "19e3104b43db45fca0303f489a9536087b184802"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -94,4 +94,4 @@ memo = "3cd22ff6ed6dd5df3baa0fb0d7bee65ca282a4e08acd52e74e705a7454649150"
   branch = "master"
   name = "google.golang.org/grpc"
   packages = [".","codes","credentials","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "955c867061e3b1a5b8f6f07d1efcf1b69af043d8"
+  revision = "6914ab1e338c92da4218a23d27fcd03d0ad78d46"

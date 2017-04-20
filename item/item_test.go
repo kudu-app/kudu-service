@@ -1,25 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"golang.org/x/net/context"
 
 	"github.com/knq/firebase"
 	"github.com/rnd/kudu-service/auth"
 	pb "github.com/rnd/kudu/golang/protogen/item"
-	pdate "github.com/rnd/kudu/golang/protogen/type/date"
 )
 
 var testService *service
 var defaultContext context.Context
 var defaultCancel context.CancelFunc
 var userID string
-var now = time.Now()
 
 func mockData() {
 	var req pb.AddRequest
@@ -27,25 +23,15 @@ func mockData() {
 	testData := []pb.Item{
 		{
 			Goal:  "Foo",
-			Tag:   "Bar",
+			Tags:  "Bar",
 			Notes: "# Baz",
 			Url:   "brank.as",
-			Date: &pdate.Date{
-				Year:  int32(now.Year()),
-				Month: int32(now.Month()),
-				Day:   int32(now.Day()),
-			},
 		},
 		{
 			Goal:  "Kudu",
-			Tag:   "App",
+			Tags:  "App",
 			Notes: "## Test",
 			Url:   "google.com",
-			Date: &pdate.Date{
-				Year:  int32(now.Year()),
-				Month: int32(now.Month()),
-				Day:   int32(now.Day() + 1),
-			},
 		},
 	}
 
@@ -61,19 +47,9 @@ func mockData() {
 func clearData() {
 	var err error
 
-	path := fmt.Sprintf(itemRef, userID)
-
-	keys := make(map[string]interface{})
-	err = testService.itemRef.Ref(path).Get(&keys, firebase.Shallow)
+	err = testService.dataRef.Ref("/item").Remove()
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	for key := range keys {
-		err = testService.itemRef.Ref(path + key).Remove()
-		if err != nil {
-			log.Fatal(err)
-		}
 	}
 }
 
@@ -92,25 +68,22 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestListItem(t *testing.T) {
+func TestTodayItems(t *testing.T) {
 	var err error
 
-	test := pb.ListRequest{
+	test := pb.TodayItemsRequest{
 		Goal: "Foo",
-		Tag:  "Bar",
-		Date: &pdate.Date{
-			Year:  int32(now.Year()),
-			Month: int32(now.Month()),
-			Day:   int32(now.Day()),
-		},
+		Tags: "Bar",
 	}
-	res, err := testService.ListItem(defaultContext, &test)
+	res, err := testService.TodayItems(defaultContext, &test)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if len(res.Items) != 1 {
-		t.Errorf("Expected list to have 1 items, got: %d", len(res.Items))
+	if res.Status != pb.ResponseStatus_SUCCESS {
+		t.Fatalf("expected response status is: '%v', got: '%v'",
+			pb.ResponseStatus_SUCCESS,
+			res.Status)
 	}
 }
 
@@ -118,21 +91,21 @@ func TestAddItem(t *testing.T) {
 	var err error
 	var req pb.AddRequest
 
-	now := time.Now()
 	req.Item = &pb.Item{
 		Goal:  "Foo",
-		Tag:   "Bar",
+		Tags:  "Bar",
 		Notes: "# Baz",
 		Url:   "reddit.com",
-		Date: &pdate.Date{
-			Year:  int32(now.Year()),
-			Month: int32(now.Month()),
-			Day:   int32(now.Day() + 2),
-		},
 	}
 	res, err := testService.AddItem(defaultContext, &req)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if res.Status != pb.ResponseStatus_SUCCESS {
+		t.Fatalf("expected response status is: '%v', got: '%v'",
+			pb.ResponseStatus_SUCCESS,
+			res.Status)
 	}
 
 	if res.Id == "" {
@@ -140,15 +113,29 @@ func TestAddItem(t *testing.T) {
 	}
 }
 
-func TestGetItem(t *testing.T) {
+func TestRemoveItem(t *testing.T) {
 	var err error
 
-	date := now.Format("20060102")
-	res, err := testService.GetItem(defaultContext, &pb.GetRequest{Id: date})
+	keys := make(map[string]interface{})
+	err = testService.dataRef.Ref("/item/"+userID).Get(&keys, firebase.Shallow)
 	if err != nil {
-		t.Errorf("Got error on get item on date: %s, %v", date, err)
+		log.Fatal(err)
 	}
-	if res.Item == nil {
-		t.Error("Expected response item to not empty")
+
+	if len(keys) < 1 {
+		log.Fatalf("expected at least one item to be present")
+	}
+
+	for key := range keys {
+		res, err := testService.RemoveItem(defaultContext, &pb.RemoveRequest{Id: key})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if res.Status != pb.ResponseStatus_SUCCESS {
+			t.Fatalf("expected response status is: '%v', got: '%v'",
+				pb.ResponseStatus_SUCCESS,
+				res.Status)
+		}
 	}
 }
