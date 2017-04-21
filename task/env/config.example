@@ -1,4 +1,4 @@
-; kudu item service settings
+; kudu task service settings
 
 [server]
 port="$PORT||9112"

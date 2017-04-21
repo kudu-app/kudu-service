@@ -10,10 +10,10 @@ import (
 	"github.com/knq/envcfg"
 	"github.com/knq/firebase"
 	"github.com/rnd/kudu-service/auth"
-	pb "github.com/rnd/kudu/golang/protogen/item"
+	pb "github.com/rnd/kudu/golang/protogen/task"
 )
 
-// newService creates new instance of item service server.
+// newService creates new instance of task service server.
 func newService() *service {
 	s := new(service)
 
@@ -46,6 +46,6 @@ func main() {
 	opts = append(opts, grpc.UnaryInterceptor(auth.UnaryInterceptor()))
 	server := grpc.NewServer(opts...)
 
-	pb.RegisterItemServiceServer(server, service)
+	pb.RegisterTaskServiceServer(server, service)
 	server.Serve(lis)
 }

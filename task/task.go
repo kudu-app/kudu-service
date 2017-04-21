@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"golang.org/x/net/context"
@@ -11,12 +10,12 @@ import (
 	"github.com/knq/firebase"
 
 	"github.com/rnd/kudu-service/auth"
-	pb "github.com/rnd/kudu/golang/protogen/item"
+	pb "github.com/rnd/kudu/golang/protogen/task"
 )
 
-// Item represents firebase database model for item data ref.
-type Item struct {
-	Goal      string `json:"goal"`
+// Task represents firebase database model for task data ref.
+type Task struct {
+	TaskName  string `json:"task_name"`
 	URL       string `json:"url,omitempty"`
 	Tags      string `json:"tags,omitempty"`
 	Notes     string `json:"notes,omitempty"`
@@ -25,7 +24,7 @@ type Item struct {
 	Completed bool   `json:"completed"`
 }
 
-// service is implementation of item service server.
+// service is implementation of task service server.
 type service struct {
 	// config is server environment config.
 	config *envcfg.Envcfg
@@ -34,43 +33,42 @@ type service struct {
 	dataRef *firebase.DatabaseRef
 }
 
-// TodayItems retrieves all items added today.
-func (s *service) TodayItems(ctx context.Context, req *pb.TodayItemsRequest) (*pb.TodayItemsResponse, error) {
+// TodayTasks retrieves all tasks added today.
+func (s *service) TodayTasks(ctx context.Context, req *pb.TodayTasksRequest) (*pb.TodayTasksResponse, error) {
 	var err error
-	res := &pb.TodayItemsResponse{
+	res := &pb.TodayTasksResponse{
 		Status: pb.ResponseStatus_INTERNAL_ERROR,
 	}
 
 	userID := ctx.Value(auth.UserIDKey).(string)
 	today := time.Now().Format("20060102")
-	items := make(map[string]Item)
+	tasks := make(map[string]Task)
 
-	err = s.dataRef.Ref("/item/"+userID).Get(&items,
+	err = s.dataRef.Ref("/task/"+userID).Get(&tasks,
 		firebase.OrderBy("date"),
 		firebase.StartAt(today),
 		firebase.EndAt(today),
 	)
 
-	log.Printf("filtering today items: %s", today)
 	if err != nil {
 		return res, err
 	}
 
-	for _, item := range items {
-		res.Items = append(res.Items, &pb.Item{
-			Goal:    item.Goal,
-			Url:     item.URL,
-			Tags:    item.Tags,
-			Notes:   item.Notes,
-			NotesMd: item.NotesMD,
+	for _, task := range tasks {
+		res.Tasks = append(res.Tasks, &pb.Task{
+			TaskName: task.TaskName,
+			Url:      task.URL,
+			Tags:     task.Tags,
+			Notes:    task.Notes,
+			NotesMd:  task.NotesMD,
 		})
 	}
 	res.Status = pb.ResponseStatus_SUCCESS
 	return res, nil
 }
 
-// AddItem add new item to datebase.
-func (s *service) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddResponse, error) {
+// AddTask add new task to datebase.
+func (s *service) AddTask(ctx context.Context, req *pb.AddRequest) (*pb.AddResponse, error) {
 	var err error
 	res := &pb.AddResponse{
 		Status: pb.ResponseStatus_INTERNAL_ERROR,
@@ -78,15 +76,15 @@ func (s *service) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddRespo
 
 	userID := ctx.Value(auth.UserIDKey).(string)
 	today := time.Now().Format("20060102")
-	item := &Item{
-		Date:  today,
-		Goal:  req.Item.Goal,
-		URL:   req.Item.Url,
-		Tags:  req.Item.Tags,
-		Notes: req.Item.Notes,
+	task := &Task{
+		Date:     today,
+		TaskName: req.Task.TaskName,
+		URL:      req.Task.Url,
+		Tags:     req.Task.Tags,
+		Notes:    req.Task.Notes,
 	}
 
-	id, err := s.dataRef.Ref("/item/" + userID).Push(item)
+	id, err := s.dataRef.Ref("/task/" + userID).Push(task)
 	if err != nil {
 		return res, err
 	}
@@ -97,15 +95,15 @@ func (s *service) AddItem(ctx context.Context, req *pb.AddRequest) (*pb.AddRespo
 	}, nil
 }
 
-// RemoveItem get single item that matches with provided criteria.
-func (s *service) RemoveItem(ctx context.Context, req *pb.RemoveRequest) (*pb.RemoveResponse, error) {
+// RemoveTask get single task that matches with provided criteria.
+func (s *service) RemoveTask(ctx context.Context, req *pb.RemoveRequest) (*pb.RemoveResponse, error) {
 	var err error
 	res := &pb.RemoveResponse{
 		Status: pb.ResponseStatus_INTERNAL_ERROR,
 	}
 
 	userID := ctx.Value(auth.UserIDKey).(string)
-	path := fmt.Sprintf("/item/%s/%s", userID, req.Id)
+	path := fmt.Sprintf("/task/%s/%s", userID, req.Id)
 
 	err = s.dataRef.Ref(path).Remove()
 	if err != nil {
