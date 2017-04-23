@@ -22,6 +22,7 @@ func newService() *service {
 	if err != nil {
 		log.Fatal(err)
 	}
+	s.config = config
 
 	// setup database
 	s.dataRef, err = firebase.NewDatabaseRef(
