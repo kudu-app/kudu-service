@@ -1,4 +1,4 @@
-memo = "f54dd4c46f6622aca84c7657daaffd1c86a55d684b34f994a15de4289d490e85"
+memo = "5e7b66f40652f35f930107f4c9b9dffe5102992811d664c4489e72c2e6afe484"
 
 [[projects]]
   name = "cloud.google.com/go"
@@ -52,25 +52,25 @@ memo = "f54dd4c46f6622aca84c7657daaffd1c86a55d684b34f994a15de4289d490e85"
   branch = "master"
   name = "github.com/rnd/kudu"
   packages = ["golang/protogen/type/creds","golang/protogen/user"]
-  revision = "88be6053a8d6f3d25da2b2384ec2be36ee01bfcd"
+  revision = "653e98da9fa71f116185467ccc4edd9013a198e3"
 
 [[projects]]
   branch = "master"
   name = "github.com/rnd/kudu-service"
-  packages = ["auth","auth/token"]
-  revision = "d3caca2402aafee272d54a9f4a85139370cc6f4d"
+  packages = ["auth/token"]
+  revision = "89179309745a922491db0c8cebdd89f392d56a26"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["bcrypt","blowfish"]
-  revision = "64205593f25ab0ca0ac8f40914760074bf246f65"
+  revision = "141c762c16f10ba7daaac32541e4f703e53afb13"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
-  revision = "5602c733f70afc6dcec6766be0d5034d4c4f14de"
+  revision = "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344"
 
 [[projects]]
   branch = "master"
@@ -82,7 +82,7 @@ memo = "f54dd4c46f6622aca84c7657daaffd1c86a55d684b34f994a15de4289d490e85"
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "19e3104b43db45fca0303f489a9536087b184802"
+  revision = "a9a820217f98f7c8a207ec1e45a874e1fe12c478"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -100,4 +100,4 @@ memo = "f54dd4c46f6622aca84c7657daaffd1c86a55d684b34f994a15de4289d490e85"
   branch = "master"
   name = "google.golang.org/grpc"
   packages = [".","codes","credentials","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "6914ab1e338c92da4218a23d27fcd03d0ad78d46"
+  revision = "38df39bad1892a821a4feac7f7506a19a13661f2"
