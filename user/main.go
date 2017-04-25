@@ -9,7 +9,6 @@ import (
 
 	"github.com/knq/envcfg"
 	"github.com/knq/firebase"
-	"github.com/rnd/kudu-service/auth"
 	pb "github.com/rnd/kudu/golang/protogen/user"
 )
 
@@ -49,10 +48,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	var opts []grpc.ServerOption
-	opts = append(opts, grpc.UnaryInterceptor(auth.UnaryInterceptor()))
-	server := grpc.NewServer(opts...)
-
+	server := grpc.NewServer()
 	pb.RegisterUserServiceServer(server, service)
 	server.Serve(lis)
 }
