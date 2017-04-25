@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -152,14 +151,10 @@ func (s *service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 	// generate token
 	exp := time.Now().Add(token.DefaultExp)
 	claims := &token.Claims{
-		User: token.User{
-			ID:          creds.UserID,
-			DisplayName: fmt.Sprintf("%s %s", user.FirstName, user.LastName),
-		},
+		UID:        creds.UserID,
 		IssuedAt:   json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
 		Expiration: json.Number(strconv.FormatInt(exp.Unix(), 10)),
 	}
-
 	token, err := token.New(claims,
 		s.config.GetKey("jwt.privatekey"),
 		s.config.GetKey("jwt.publickey"),

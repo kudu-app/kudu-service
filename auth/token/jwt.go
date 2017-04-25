@@ -10,20 +10,11 @@ import (
 // DefaultExp is token default expiration time.
 const DefaultExp = time.Minute * 15
 
-// User holds kudu user information.
-type User struct {
-	// ID is user unique id.
-	ID string `json:"id"`
-
-	// DisplayName is user combined first name and last name.
-	DisplayName string `json:"display_name"`
-}
-
 // Claims contains the registered JWT claims.
 type Claims struct {
 
-	// User ("user") identifies the user.
-	User User `json:"user"`
+	// UID ("uid") identifies user that requested this token.
+	UID string `json:"uid"`
 
 	// Expiration ("exp") identifies the expiration time on or after which the
 	// JWT MUST NOT be accepted for processing.
