@@ -1,7 +1,7 @@
 ; kudu user service settings
 
 [server]
-port="$PORT||9111"
+port="$PORT||8080"
 
 [jwt]
 privatekey="$JWT_SIGNER_PRIVATE_KEY||./creds/jwt-signer/ecdsa_private.pem||file"
