@@ -58,13 +58,13 @@ memo = "5e7b66f40652f35f930107f4c9b9dffe5102992811d664c4489e72c2e6afe484"
   branch = "master"
   name = "github.com/rnd/kudu-service"
   packages = ["auth/token"]
-  revision = "4ac1a52be9492e94d87fb1ee2fd1695e55445266"
+  revision = "0e8633cfd70cc94ab04b337d85bf0c7530b6b17d"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["bcrypt","blowfish"]
-  revision = "141c762c16f10ba7daaac32541e4f703e53afb13"
+  revision = "c7af5bf2638a1164f2eb5467c39c6cffbd13a02e"
 
 [[projects]]
   branch = "master"
@@ -82,7 +82,7 @@ memo = "5e7b66f40652f35f930107f4c9b9dffe5102992811d664c4489e72c2e6afe484"
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "a9a820217f98f7c8a207ec1e45a874e1fe12c478"
+  revision = "470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -99,5 +99,5 @@ memo = "5e7b66f40652f35f930107f4c9b9dffe5102992811d664c4489e72c2e6afe484"
 [[projects]]
   branch = "master"
   name = "google.golang.org/grpc"
-  packages = [".","codes","credentials","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "38df39bad1892a821a4feac7f7506a19a13661f2"
+  packages = [".","codes","credentials","grpclb/grpc_lb_v1","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
+  revision = "277e90a4321cba6ad9f9ca4a832165265002c3a5"
