@@ -21,6 +21,14 @@ var (
 	// ErrInvalidCredential is the error returned when the credentials
 	// is not match.
 	ErrInvalidCredential = errors.New("Invalid username or password")
+
+	// ErrRegisteredEmail is the error returned when user register
+	// with registered email.
+	ErrRegisteredEmail = errors.New("Email already registered")
+
+	// ErrRegisteredUsername is the error returned when user register
+	// with registered email.
+	ErrRegisteredUsername = errors.New("Username already registered")
 )
 
 // User represents firebase database model for user data ref.
@@ -51,6 +59,26 @@ func (s *service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Re
 
 	encEmail := base64.StdEncoding.EncodeToString([]byte(req.Credential.Email))
 	encUsername := base64.StdEncoding.EncodeToString([]byte(req.Credential.Username))
+
+	// check if email / username already registered.
+	var check struct {
+		UserID string `json:"user_id"`
+	}
+	err = s.authRef.Ref("/credential/email/" + encEmail).Get(&check)
+	if err != nil {
+		return res, err
+	}
+	if check.UserID != "" {
+		return res, ErrRegisteredEmail
+	}
+
+	err = s.authRef.Ref("/credential/username/" + encUsername).Get(&check)
+	if err != nil {
+		return res, err
+	}
+	if check.UserID != "" {
+		return res, ErrRegisteredUsername
+	}
 
 	// Create user auth record
 	userID, err := s.authRef.Ref("/user").Push(map[string]interface{}{
